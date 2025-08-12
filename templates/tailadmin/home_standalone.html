@@ -1,0 +1,64 @@
+{% load static %}
+{% load leaflet_tags %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Búsqueda | Auto Repuestos Paraguay</title>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" />
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" />
+    <script defer src="{% static 'js/bundle.js' %}"></script>
+    {% leaflet_css %}
+    {% leaflet_js %}
+    <style>
+      #main_map { height: 500px; width: 100%; }
+    </style>
+    <script>
+      function map_init(map, options) {
+        // Obtenemos las capas GeoJSON de Django
+        var branches = JSON.parse('{{ branches_geojson|safe }}');
+        var professionals = JSON.parse('{{ professionals_geojson|safe }}');
+
+        // Creamos las capas de Leaflet para cada conjunto de datos
+        var branchesLayer = L.geoJSON(branches);
+        var professionalsLayer = L.geoJSON(professionals);
+
+        // Agregamos ambas capas al mapa
+        branchesLayer.addTo(map);
+        professionalsLayer.addTo(map);
+
+        // Si hay marcadores, ajustamos el mapa para que se vean todos
+        var allBounds = new L.LatLngBounds();
+        if (branchesLayer.getBounds().isValid()) {
+            allBounds.extend(branchesLayer.getBounds());
+        }
+        if (professionalsLayer.getBounds().isValid()) {
+            allBounds.extend(professionalsLayer.getBounds());
+        }
+
+        if (allBounds.isValid()) {
+            map.fitBounds(allBounds, {padding: [50, 50]});
+        } else {
+            // Si no hay marcadores, centramos en una ubicación predeterminada
+            map.setView([-25.26, -57.57], 8); // Coordenadas y zoom de Paraguay
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="flex h-screen overflow-hidden">
+      <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <main>
+          <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            <h1>Buscador de Tiendas y Talleres</h1>
+            <div class="mb-6">
+              {% leaflet_map "main_map" callback="map_init" %}
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

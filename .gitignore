@@ -1,0 +1,20 @@
+# Archivos y directorios de entornos virtuales
+/sistema-gestion/
+.venv/
+env/
+venv/
+
+# Archivos de Python y de Django
+*.pyc
+__pycache__/
+*.log
+db.sqlite3
+
+# Archivos de Tailwind y Node
+node_modules/
+npm-debug.log
+
+# Archivos de configuración y datos sensibles
+.env
+local_settings.py
+static/css/main.css

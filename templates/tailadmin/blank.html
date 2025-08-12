@@ -1,0 +1,34 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>{% block title %}Tu Proyecto Django{% endblock %}</title>
+    </head>
+  <body
+    x-data="{ page: '{{ page|default:'default' }}', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+    x-init="
+      darkMode = JSON.parse(localStorage.getItem('darkMode'));
+      $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+    :class="{'dark bg-gray-900': darkMode === true}"
+  >
+    {% include "partials/preloader.html" %}
+
+    <div class="flex h-screen overflow-hidden">
+      {% include "partials/sidebar.html" %}
+
+      <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        {% include "partials/overlay.html" %}
+        {% include "partials/header.html" %}
+
+        <main>
+          <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+            {% block content %}
+            {% endblock %}
+          </div>
+        </main>
+
+      </div>
+    </div>
+  </body>
+</html>

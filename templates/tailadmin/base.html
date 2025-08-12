@@ -1,0 +1,30 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        TailAdmin
+      {% endblock %}
+    </title>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" />
+    <link href="{% static 'css/main.css' %}?v=1" rel="stylesheet" />
+    <script defer src="{% static 'js/bundle.js' %}"></script>
+    
+    {% block head_extras %}{% endblock %}
+  </head>
+  <body>
+    <div class="flex h-screen overflow-hidden">
+      <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <main>
+          <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            {% block content %}{% endblock %}
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
