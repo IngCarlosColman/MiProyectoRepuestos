@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -38,8 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'leaflet', 
+    'leaflet',
+    'easy_thumbnails',
+    'multiselectfield',
     'locations',
+    'users',  # Agrega esta línea
 ]
 
 MIDDLEWARE = [
@@ -57,7 +61,7 @@ ROOT_URLCONF = 'sisrep_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], # <-- Cambia esta línea
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -65,6 +69,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+            ],
+            'builtins': [
+                'easy_thumbnails.templatetags.thumbnail',
             ],
         },
     },
@@ -110,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -133,8 +140,41 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-import os
-if os.name == 'nt': # Es Windows
-    import platform
-    if platform.architecture()[0] == '64bit':
-        GDAL_LIBRARY_PATH = r'C:\Users\carlosdev\miniconda3\envs\sistema-gestion\Library\bin\gdal311.dll'
+# ---
+# CONFIGURACIÓN GIS Y MAPAS
+# ---
+
+# Las librerías GDAL y GEOS se instalaron en tu nuevo entorno `sisrep-stable-env`.
+# Por lo tanto, las rutas deben apuntar a ese directorio.
+os.environ['PROJ_LIB'] = r'C:\Users\carlosdev\miniconda3\envs\sisrep-stable-env\Library\share\proj'
+os.environ['GDAL_LIBRARY_PATH'] = r'C:\Users\carlosdev\miniconda3\envs\sisrep-stable-env\Library\bin\gdal307.dll'
+os.environ['GEOS_LIBRARY_PATH'] = r'C:\Users\carlosdev\miniconda3\envs\sisrep-stable-env\Library\bin\geos_c.dll'
+
+# Configuración de Django-Leaflet para el mapa del panel de administración
+LEAFLET_CONFIG = {
+    # Coordenadas de latitud y longitud para el centro del mapa
+    'DEFAULT_CENTER': (-23.4425, -58.4438),  # (Latitud, Longitud)
+    # Nivel de zoom predeterminado
+    'DEFAULT_ZOOM': 6,
+    # Nivel de zoom mínimo y máximo
+    'MIN_ZOOM': 2,
+    'MAX_ZOOM': 18,
+    # Capa de mapa base
+    'DEFAULT_TILE_LAYER': 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    # Atribución para la capa de mapa
+    'ATTRIBUTION_PREFIX': 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}
+
+# ---
+# CONFIGURACIÓN DE ARCHIVOS MULTIMEDIA
+# ---
+# Directorio donde se guardarán los archivos multimedia
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'logo_list': {'size': (96, 96), 'crop': True, 'upscale': False},
+        'logo_detail': {'size': (100, 100), 'crop': True, 'upscale': False},
+    },
+}

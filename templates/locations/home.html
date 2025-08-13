@@ -1,0 +1,66 @@
+{% extends "tailadmin/base.html" %}
+{% load static %}
+
+{% block title %}
+  Página de Inicio
+{% endblock %}
+
+{% block page_name %}
+  Bienvenido
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8 p-4 md:p-6">
+  <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <h2 class="text-2xl font-bold mb-4">Ubicaciones de la Red</h2>
+    <div id="home-map" class="w-full h-96 rounded-lg"></div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {% if stores %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold mb-4">Tiendas</h3>
+      <p>Hay {{ stores|length }} tiendas registradas.</p>
+    </div>
+    {% endif %}
+
+    {% if branches %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold mb-4">Sucursales</h3>
+      <p>Hay {{ branches|length }} sucursales registradas.</p>
+    </div>
+    {% endif %}
+
+    {% if professionals %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold mb-4">Profesionales</h3>
+      <p>Hay {{ professionals|length }} profesionales registrados.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var geojsonData = JSON.parse('{{ home_geojson|escapejs }}');
+        
+        if (geojsonData.features.length > 0) {
+            var map = L.map('home-map').fitWorld();
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var geojsonLayer = L.geoJSON(geojsonData, {
+                onEachFeature: function(feature, layer) {
+                    if (feature.properties && feature.properties.name) {
+                        layer.bindPopup('<b>' + feature.properties.name + '</b><br>' + feature.properties.address + '<br><a href="' + feature.properties.url + '">Ver detalles</a>');
+                    }
+                }
+            }).addTo(map);
+
+            map.fitBounds(geojsonLayer.getBounds());
+        }
+    });
+</script>
+{% endblock %}

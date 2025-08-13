@@ -1,0 +1,50 @@
+{% extends "tailadmin/base.html" %}
+{% load static %}
+{% load thumbnail %}
+
+{% block title %}
+  {{ store.name }}
+{% endblock %}
+
+{% block page_name %}
+  Detalle de {{ store.name }}
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8 p-4 md:p-6">
+  <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <div class="flex items-start gap-4">
+      {% if store.logo %}
+        <img src="{% thumbnail store.logo 'logo_detail' %}" alt="Logo de {{ store.name }}" class="h-24 w-24 rounded-full object-cover">
+      {% endif %}
+      <div>
+        <h2 class="text-3xl font-bold text-gray-800">{{ store.name }}</h2>
+        <p class="text-gray-600 mt-2">{{ store.address }}</p>
+        <p class="text-gray-600">Teléfono: {{ store.phone_number }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <h3 class="text-xl font-semibold mb-4">Ubicación</h3>
+    <div id="store-map" class="w-full h-96 rounded-lg"></div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfBIHwVvdae7l9I4t/aP16azSRfXv/8A=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20n636Y3z2kF33B6R5/P2b23K/z5tF2eK1tTq5iF5g4=" crossorigin=""></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var map = L.map('store-map').setView([{{ store.location.y }}, {{ store.location.x }}], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([{{ store.location.y }}, {{ store.location.x }}]).addTo(map)
+            .bindPopup("<b>{{ store.name }}</b><br>{{ store.address }}").openPopup();
+    });
+</script>
+
+{% endblock %}
