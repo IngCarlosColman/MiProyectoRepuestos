@@ -2,7 +2,7 @@ const path = require("path");
 const glob = require("glob");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CopyWebpackPlugin = require('copy-webpack-plugin'); // Agregamos el plugin para copiar archivos
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const INCLUDE_PATTERN =
   /<include\s+src=["'](.+?)["']\s*\/?>\s*(?:<\/include>)?/gis;
@@ -40,10 +40,11 @@ const generateHTMLPlugins = () =>
 
 module.exports = {
   mode: "development",
-  // Modificamos el entry para que procese tanto JS como CSS
   entry: {
-    bundle: "./src/js/index.js",
-    style: "./src/css/style.css", // Asegúrate de que este sea el nombre de tu archivo CSS principal
+    // Definimos un único punto de entrada para el JavaScript de React
+    bundle: "./src/index.js",
+    // Mantenemos el CSS como un punto de entrada separado para tu template de TailAdmin
+    style: "./src/css/style.css",
   },
   devServer: {
     static: {
@@ -61,7 +62,8 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env'],
+            // Aquí agregamos @babel/preset-react para que Babel entienda el JSX
+            presets: ['@babel/preset-env', '@babel/preset-react'],
           },
         },
       },
@@ -81,23 +83,21 @@ module.exports = {
       filename: "style.css",
       chunkFilename: "style.css",
     }),
-    // Agregamos el plugin para copiar las imágenes de Leaflet
     new CopyWebpackPlugin({
       patterns: [
         {
           from: path.resolve(__dirname, 'node_modules/leaflet/dist/images'),
-          to: path.resolve(__dirname, 'build/images'), // El destino debe coincidir con tu carpeta 'build'
+          to: path.resolve(__dirname, 'build/images'),
         },
       ],
     }),
   ],
   output: {
-    // Usamos [name] para generar los archivos de salida con sus nombres
     filename: "[name].js",
     path: path.resolve(__dirname, "build"),
     clean: true,
     assetModuleFilename: "[path][name][ext]",
   },
-  target: "web", // fix for "browserslist" error message
-  stats: "errors-only", // suppress irrelevant log messages
+  target: "web",
+  stats: "errors-only",
 };
