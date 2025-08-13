@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.geos import Point
 
 # =================================================================
 # Modelo Base (Abstracto)
@@ -147,6 +148,7 @@ class Categoria(BaseModel):
 class Vehiculo(BaseModel):
     """
     Representa la información de un vehículo (marca, modelo, año).
+    Este modelo es la clave para manejar la compatibilidad de forma robusta.
     """
     marca = models.CharField(
         max_length=50,
@@ -193,33 +195,18 @@ class RepuestoGlobal(BaseModel):
         null=True,
         verbose_name="Categoría"
     )
-    marca_vehiculo = models.CharField(
-        max_length=50,
-        blank=True,
-        null=True,
-        verbose_name="Marca del vehículo"
-    )
-    modelo_vehiculo = models.CharField(
-        max_length=50,
-        blank=True,
-        null=True,
-        verbose_name="Modelo del vehículo"
-    )
-    anio_vehiculo = models.IntegerField(
-        blank=True,
-        null=True,
-        verbose_name="Año del vehículo"
-    )
     imagen_url = models.URLField(
         blank=True,
         null=True,
         verbose_name="URL de la Imagen"
     )
-    disponible = models.BooleanField(
-        default=True,
-        verbose_name="Disponible"
+    
+    # Nuevo campo: Relación ManyToMany con el modelo Vehiculo para manejar la compatibilidad.
+    compatibilidad = models.ManyToManyField(
+        Vehiculo,
+        related_name='repuestos_compatibles',
+        verbose_name="Vehículos compatibles"
     )
-    # Hemos quitado precio y stock de este modelo, ya que son datos de cada sucursal.
 
     class Meta:
         verbose_name = "Repuesto Global"
