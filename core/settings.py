@@ -74,10 +74,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',   # Requerido para usar PostGIS
+    'django_filters',
     'corsheaders',          # Para permitir peticiones desde el frontend de React
     'rest_framework',       # Para la API
     'buscador',             # Tu aplicación
 ]
+
+# Configuración de Django REST Framework para usar el filtro
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
