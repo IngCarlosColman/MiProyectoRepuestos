@@ -1,20 +1,66 @@
-# Archivos y directorios de entornos virtuales
-/sistema-gestion/
-.venv/
-env/
-venv/
-
-# Archivos de Python y de Django
-*.pyc
+# Python / Django
+# -------------------------------------------------------------
+# Bytecode generado por Python
 __pycache__/
-*.log
+*.py[cod]
+*.so
+
+# Entorno de desarrollo de Conda
+# Si creas un entorno dentro del proyecto, ignóralo.
+sisrep-stable-env/
+.venv/
+venv/
+env/
+
+# Base de datos
+# No subas archivos de base de datos de desarrollo, especialmente SQLite
+# Aunque usas PostgreSQL, es buena práctica ignorar este por si acaso.
 db.sqlite3
 
-# Archivos de Tailwind y Node
-node_modules/
-npm-debug.log
+# Archivos de la base de datos de PostgreSQL
+# Si generas archivos de la base de datos en el proyecto.
+*.pgsql
+*.sql
+*.pgdump
 
-# Archivos de configuración y datos sensibles
+# Archivos estáticos y de media subidos
+# Los archivos de media subidos por los usuarios deben ignorarse.
+/media/
+
+# Archivos de logs
+*.log
+
+
+# Node.js / Webpack
+# -------------------------------------------------------------
+# Módulos de Node (dependencias)
+node_modules/
+
+# Archivos generados por Webpack y otros builders
+# La carpeta de build final se puede regenerar
+build/
+static/dist/
+dist/
+
+# Archivos de configuración de NPM
+npm-debug.log*
+
+
+# IDEs y Sistema Operativo
+# -------------------------------------------------------------
+# Archivos de VS Code
+.vscode/
+
+# Archivos de sistema de Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+System Volume Information/
+
+# Archivos de macOS
+.DS_Store
+
+# Archivos de configuración de entorno
+# No subas variables de entorno con información sensible
 .env
-local_settings.py
-static/css/main.css
