@@ -104,8 +104,8 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Ahora Django buscará el index.html directamente en la carpeta 'build'
-        'DIRS': [os.path.join(BASE_DIR, 'build')], 
+        # Ahora Django buscará el index.html directamente en la carpeta 'templates'
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
