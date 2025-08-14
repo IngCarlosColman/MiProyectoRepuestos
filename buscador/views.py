@@ -1,4 +1,6 @@
+# buscador/views.py
 from django.shortcuts import render
+from django.db import models # ¡Importante! Necesitamos importar 'models' para usar Q
 from rest_framework import generics
 from .models import RepuestoGlobal, Categoria, Vehiculo
 from .serializers import RepuestoGlobalSerializer
@@ -25,8 +27,10 @@ class RepuestoGlobalList(generics.ListAPIView):
     serializer_class = RepuestoGlobalSerializer
     
     def get_queryset(self):
+        # Obtener todos los repuestos como punto de partida.
         queryset = RepuestoGlobal.objects.all()
         
+        # Obtener los parámetros de la URL para filtrar.
         search_term = self.request.query_params.get('search', None)
         marca_filter = self.request.query_params.get('marca', None)
         modelo_filter = self.request.query_params.get('modelo', None)
@@ -37,19 +41,21 @@ class RepuestoGlobalList(generics.ListAPIView):
             queryset = queryset.filter(
                 models.Q(nombre__icontains=search_term) |
                 models.Q(descripcion__icontains=search_term)
-            ).distinct()
+            )
 
-        # Filtros de compatibilidad
+        # Filtros de compatibilidad:
+        # Corregimos el nombre del campo a 'compatibilidad' para que coincida con el modelo.
         if marca_filter:
-            queryset = queryset.filter(vehiculo__marca__icontains=marca_filter)
+            queryset = queryset.filter(compatibilidad__marca__icontains=marca_filter)
         if modelo_filter:
-            queryset = queryset.filter(vehiculo__modelo__icontains=modelo_filter)
+            queryset = queryset.filter(compatibilidad__modelo__icontains=modelo_filter)
         if anio_filter:
-            queryset = queryset.filter(vehiculo__anio=anio_filter)
+            queryset = queryset.filter(compatibilidad__anio=anio_filter)
         
-        # Filtro de categoría
+        # Filtro de categoría:
+        # El nombre del campo aquí es correcto.
         if categoria_filter:
             queryset = queryset.filter(categoria=categoria_filter)
-
+        
+        # Usamos distinct() al final para evitar duplicados si se aplican múltiples filtros.
         return queryset.distinct()
-

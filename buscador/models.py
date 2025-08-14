@@ -1,3 +1,4 @@
+# buscador/models.py
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
@@ -200,8 +201,20 @@ class RepuestoGlobal(BaseModel):
         null=True,
         verbose_name="URL de la Imagen"
     )
+    # ¡Importante! Configuramos estos campos para que sean opcionales por ahora.
+    codigo = models.CharField(
+        max_length=50,
+        unique=True,
+        null=False,
+        blank=False,
+        verbose_name="Código del Repuesto"
+    )
+    cantidad = models.IntegerField(
+        default=0,
+        verbose_name="Cantidad"
+    )
     
-    # Nuevo campo: Relación ManyToMany con el modelo Vehiculo para manejar la compatibilidad.
+    # Relación ManyToMany con el modelo Vehiculo para manejar la compatibilidad.
     compatibilidad = models.ManyToManyField(
         Vehiculo,
         related_name='repuestos_compatibles',

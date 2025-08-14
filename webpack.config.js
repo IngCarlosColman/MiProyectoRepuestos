@@ -1,40 +1,42 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = {
-  // Modo de desarrollo
+  // Modo de desarrollo para activar herramientas de depuración
   mode: "development",
   
-  // Punto de entrada principal (React y CSS)
-  entry: {
-    bundle: "./src/index.js",
-  },
+  // Punto de entrada principal para la aplicación
+  entry: "./src/index.js",
   
   output: {
-    // Directorio de salida final para el JavaScript y CSS
+    // Directorio de salida para los archivos de producción
     path: path.resolve(__dirname, 'static/dist'),
-    // Nombres de los archivos de salida
     filename: "[name].js",
-    // Limpia el directorio de salida antes de cada compilación
     clean: true,
   },
   
+  // Configuración del servidor de desarrollo de Webpack
   devServer: {
-    static: {
-      directory: path.join(__dirname, "./static/dist"),
-    },
-    compress: true,
     port: 3000,
     hot: true,
+    historyApiFallback: true, // Crucial para el enrutamiento del lado del cliente
+    open: true, // Abre el navegador automáticamente al iniciar
+    // Configuración del proxy para redirigir peticiones a la API de Django
+    // ¡Aquí está la corrección! El proxy ahora es un array.
+    proxy: [{
+      context: ['/api'],
+      target: 'http://localhost:8000',
+    }],
   },
 
-  // Módulos (Loaders)
+  // Módulos (Loaders) para procesar diferentes tipos de archivos
   module: {
     rules: [
-      // Regla para archivos JavaScript y JSX
+      // Configuración para archivos JavaScript y JSX con Babel
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
@@ -45,7 +47,7 @@ module.exports = {
           },
         },
       },
-      // Regla para archivos CSS (procesa Tailwind)
+      // Configuración para archivos CSS, incluyendo Tailwind
       {
         test: /\.css$/,
         use: [
@@ -54,7 +56,7 @@ module.exports = {
           'postcss-loader',
         ],
       },
-      // Regla para manejar archivos de imagen
+      // Configuración para manejar imágenes y otros assets
       {
         test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
         type: 'asset/resource',
@@ -65,7 +67,7 @@ module.exports = {
     ],
   },
   
-  // Plugins
+  // Plugins para añadir funcionalidades adicionales a Webpack
   plugins: [
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
@@ -83,9 +85,13 @@ module.exports = {
         },
       ],
     }),
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+      filename: 'index.html',
+    }),
   ],
   
-  // Opciones de optimización
+  // Opciones de optimización para producción
   optimization: {
     minimizer: [
       new CssMinimizerPlugin(),

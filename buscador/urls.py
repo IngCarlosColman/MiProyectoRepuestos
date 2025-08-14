@@ -1,8 +1,6 @@
+# buscador/urls.py
 from django.urls import path
 from . import views
-from rest_framework import routers
-
-router = routers.DefaultRouter()
 
 urlpatterns = [
     # Ruta para la aplicación de React
@@ -13,4 +11,5 @@ urlpatterns = [
     path('api/repuestos/', views.RepuestoGlobalList.as_view(), name='repuesto-list'),
 ]
 
-urlpatterns += router.urls
+# Ya no es necesario añadir 'urlpatterns += router.urls'
+# porque no estamos usando ViewSets.

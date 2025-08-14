@@ -1,3 +1,4 @@
+# core/settings.py
 import os
 from pathlib import Path
 import sys

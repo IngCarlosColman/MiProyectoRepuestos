@@ -5,16 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador de Repuestos</title>
-    <!-- Usa la etiqueta 'static' de Django para apuntar a la ruta correcta -->
-    <link rel="icon" href="{% static 'dist/favicon.ico' %}">
-    <link href="{% static 'dist/style.css' %}" rel="stylesheet">
+    
+    <!-- Enlace a la hoja de estilos generada por el servidor de desarrollo de React -->
+    <link href="http://localhost:3000/static/style.css" rel="stylesheet">
 </head>
 <body>
     <!-- Aquí es donde se montará la aplicación de React -->
     <div id="root"></div>
 
-    <!-- Usa la etiqueta 'static' de Django para apuntar a la ruta correcta -->
-    <!-- Se elimina el script duplicado de style.js, ya que no es necesario -->
-    <script src="{% static 'dist/bundle.js' %}"></script>
+    <!-- Enlace al bundle de JavaScript generado por el servidor de desarrollo de React -->
+    <script src="http://localhost:3000/static/bundle.js"></script>
 </body>
 </html>

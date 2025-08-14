@@ -1,130 +1,149 @@
 import os
+import sys
 import django
+from django.db import transaction
 from django.contrib.gis.geos import Point
 
-# Configura el entorno de Django para que el script pueda acceder a los modelos
+# CONFIGURACIÓN DEL ENTORNO DE DJANGO
+# ============================================================================
+# Agrega la ruta raíz de tu proyecto al sys.path para que Python pueda encontrar 'core'.
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_root)
+
+# Esta línea le dice a Django dónde encontrar la configuración de tu proyecto.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
+# ============================================================================
 
-# Importa los modelos que hemos creado
+
 from buscador.models import (
-    Vehiculo,
-    Categoria,
     Tienda,
+    Categoria,
+    Vehiculo,
     Sucursal,
     RepuestoGlobal,
     RepuestoSucursal,
 )
 
-print("Iniciando script para poblar la base de datos...")
+def borrar_datos_existentes():
+    """Elimina todos los datos de las tablas del proyecto."""
+    print("Eliminando datos existentes...")
+    with transaction.atomic():
+        RepuestoSucursal.objects.all().delete()
+        RepuestoGlobal.objects.all().delete()
+        Sucursal.objects.all().delete()
+        Vehiculo.objects.all().delete()
+        Categoria.objects.all().delete()
+        Tienda.objects.all().delete()
+    print("Datos eliminados correctamente.")
 
-# --- Limpiar los datos existentes para evitar duplicados ---
-RepuestoSucursal.objects.all().delete()
-RepuestoGlobal.objects.all().delete()
-Sucursal.objects.all().delete()
-Tienda.objects.all().delete()
-Vehiculo.objects.all().delete()
-Categoria.objects.all().delete()
+def crear_datos_de_ejemplo():
+    """Crea datos de ejemplo para las tablas del proyecto."""
+    print("Creando datos de ejemplo...")
 
-print("Datos existentes limpiados.")
+    # Crear tiendas
+    tiendas = [
+        Tienda(nombre="Tienda A"),
+        Tienda(nombre="Tienda B"),
+        Tienda(nombre="Tienda C"),
+    ]
+    Tienda.objects.bulk_create(tiendas)
+    print(f"Creadas {len(tiendas)} tiendas.")
 
-# --- Crear Categorías ---
-print("Creando categorías...")
-categoria_frenos = Categoria.objects.create(nombre="Frenos")
-categoria_motor = Categoria.objects.create(nombre="Motor")
-categoria_suspension = Categoria.objects.create(nombre="Suspensión")
-categoria_electronica = Categoria.objects.create(nombre="Electrónica")
+    # Crear categorías
+    categorias = [
+        Categoria(nombre="Motor"),
+        Categoria(nombre="Frenos"),
+        Categoria(nombre="Suspension"),
+        Categoria(nombre="Transmision"),
+        Categoria(nombre="Electrico"),
+    ]
+    Categoria.objects.bulk_create(categorias)
+    print(f"Creadas {len(categorias)} categorías.")
 
-# --- Crear Vehículos ---
-print("Creando vehículos...")
-vehiculo_corolla_2010 = Vehiculo.objects.create(marca="Toyota", modelo="Corolla", anio=2010)
-vehiculo_corolla_2015 = Vehiculo.objects.create(marca="Toyota", modelo="Corolla", anio=2015)
-vehiculo_focus_2012 = Vehiculo.objects.create(marca="Ford", modelo="Focus", anio=2012)
-vehiculo_focus_2018 = Vehiculo.objects.create(marca="Ford", modelo="Focus", anio=2018)
+    # Crear vehículos - Se corrigió el nombre del campo a 'anio'
+    vehiculos = [
+        Vehiculo(marca="Toyota", modelo="Corolla", anio=2020),
+        Vehiculo(marca="Ford", modelo="Focus", anio=2018),
+        Vehiculo(marca="Nissan", modelo="Sentra", anio=2021),
+    ]
+    Vehiculo.objects.bulk_create(vehiculos)
+    print(f"Creados {len(vehiculos)} vehículos.")
 
-# --- Crear Tiendas y Sucursales ---
-print("Creando tiendas y sucursales...")
-tienda_principal = Tienda.objects.create(
-    nombre="Repuestos Central",
-    email="contacto@repuestocentral.com",
-    tiene_delivery=True,
-    dias_atencion="Lunes a Sábado",
-    telefono="987654321"
-)
-sucursal_asuncion = Sucursal.objects.create(
-    tienda=tienda_principal,
-    nombre="Sucursal Asunción",
-    direccion="Calle Palma 123, Asunción",
-    telefono="987654321",
-    ubicacion=Point(-25.2965, -57.6479, srid=4326) # Coordenadas de Asunción
-)
-tienda_zona_sur = Tienda.objects.create(
-    nombre="Repuestos del Sur",
-    email="sur@repuestos.com",
-    tiene_delivery=False,
-    dias_atencion="Lunes a Viernes",
-    telefono="123456789"
-)
-sucursal_san_lorenzo = Sucursal.objects.create(
-    tienda=tienda_zona_sur,
-    nombre="Sucursal San Lorenzo",
-    direccion="Ruta 2, km 15, San Lorenzo",
-    telefono="123456789",
-    ubicacion=Point(-25.3400, -57.5000, srid=4326) # Coordenadas de San Lorenzo
-)
+    # Crear sucursales - Se agregó un punto de ubicación de ejemplo
+    sucursales = [
+        Sucursal(
+            nombre="Sucursal Norte",
+            direccion="Calle 123, Ciudad A",
+            telefono="123456789",
+            tienda=tiendas[0],
+            ubicacion=Point(-58.3816, -34.6037)  # Coordenadas de ejemplo
+        ),
+        Sucursal(
+            nombre="Sucursal Centro",
+            direccion="Avenida 456, Ciudad A",
+            telefono="987654321",
+            tienda=tiendas[0],
+            ubicacion=Point(-58.3810, -34.6050)
+        ),
+        Sucursal(
+            nombre="Sucursal Este",
+            direccion="Ruta 789, Ciudad B",
+            telefono="112233445",
+            tienda=tiendas[1],
+            ubicacion=Point(-58.3750, -34.6000)
+        ),
+        Sucursal(
+            nombre="Sucursal Oeste",
+            direccion="Calle 101, Ciudad C",
+            telefono="556677889",
+            tienda=tiendas[2],
+            ubicacion=Point(-58.3900, -34.6100)
+        ),
+    ]
+    Sucursal.objects.bulk_create(sucursales)
+    print(f"Creadas {len(sucursales)} sucursales.")
 
-# --- Crear Repuestos Globales ---
-print("Creando repuestos globales...")
-pastillas_freno = RepuestoGlobal.objects.create(
-    nombre="Pastillas de Freno Delanteras",
-    descripcion="Pastillas de freno de cerámica para un rendimiento óptimo.",
-    categoria=categoria_frenos
-)
-pastillas_freno.compatibilidad.add(vehiculo_corolla_2010, vehiculo_focus_2012)
+    # Crear repuestos globales y asignar a categorías - Se corrigió el campo 'numero_parte' a 'codigo'
+    repuestos_globales = [
+        RepuestoGlobal(nombre="Filtro de Aceite", codigo="FA-123", categoria=categorias[0], cantidad=50),
+        RepuestoGlobal(nombre="Pastilla de Freno", codigo="PF-456", categoria=categorias[1], cantidad=100),
+        RepuestoGlobal(nombre="Amortiguador", codigo="AM-789", categoria=categorias[2], cantidad=75),
+        RepuestoGlobal(nombre="Bujia", codigo="BU-101", categoria=categorias[0], cantidad=200),
+    ]
+    RepuestoGlobal.objects.bulk_create(repuestos_globales)
+    print(f"Creados {len(repuestos_globales)} repuestos globales.")
 
-disco_freno = RepuestoGlobal.objects.create(
-    nombre="Disco de Freno",
-    descripcion="Disco de freno ventilado de alto rendimiento.",
-    categoria=categoria_frenos
-)
-disco_freno.compatibilidad.add(vehiculo_corolla_2015)
+    # Asignar compatibilidad - Se corrigió el campo a 'compatibilidad'
+    repuestos_globales[0].compatibilidad.set([vehiculos[0], vehiculos[1]])
+    repuestos_globales[1].compatibilidad.set([vehiculos[1], vehiculos[2]])
+    repuestos_globales[2].compatibilidad.set([vehiculos[0]])
+    repuestos_globales[3].compatibilidad.set([vehiculos[2]])
 
-filtro_aceite = RepuestoGlobal.objects.create(
-    nombre="Filtro de Aceite",
-    descripcion="Filtro de aceite de larga duración.",
-    categoria=categoria_motor
-)
-filtro_aceite.compatibilidad.add(vehiculo_corolla_2010, vehiculo_focus_2012, vehiculo_corolla_2015, vehiculo_focus_2018)
+    # Crear registros de stock por sucursal - Se agregó el campo 'precio'
+    repuestos_sucursales = [
+        RepuestoSucursal(
+            repuesto_global=repuestos_globales[0], sucursal=sucursales[0], stock=10, precio=15.50
+        ),
+        RepuestoSucursal(
+            repuesto_global=repuestos_globales[0], sucursal=sucursales[1], stock=5, precio=14.99
+        ),
+        RepuestoSucursal(
+            repuesto_global=repuestos_globales[1], sucursal=sucursales[2], stock=20, precio=45.00
+        ),
+        RepuestoSucursal(
+            repuesto_global=repuestos_globales[2], sucursal=sucursales[3], stock=15, precio=89.90
+        ),
+        RepuestoSucursal(
+            repuesto_global=repuestos_globales[3], sucursal=sucursales[0], stock=8, precio=5.25
+        ),
+    ]
+    RepuestoSucursal.objects.bulk_create(repuestos_sucursales)
+    print(f"Creados {len(repuestos_sucursales)} registros de stock por sucursal.")
 
-# --- Crear Inventario para las Sucursales ---
-print("Creando inventario...")
-RepuestoSucursal.objects.create(
-    sucursal=sucursal_asuncion,
-    repuesto_global=pastillas_freno,
-    precio=150000.00,
-    stock=10,
-    stock_minimo=2
-)
-RepuestoSucursal.objects.create(
-    sucursal=sucursal_asuncion,
-    repuesto_global=filtro_aceite,
-    precio=50000.00,
-    stock=25,
-    stock_minimo=5
-)
-RepuestoSucursal.objects.create(
-    sucursal=sucursal_san_lorenzo,
-    repuesto_global=pastillas_freno,
-    precio=145000.00,
-    stock=8,
-    stock_minimo=3
-)
-RepuestoSucursal.objects.create(
-    sucursal=sucursal_san_lorenzo,
-    repuesto_global=disco_freno,
-    precio=250000.00,
-    stock=5,
-    stock_minimo=1
-)
+    print("\n¡Todos los datos de ejemplo han sido creados exitosamente!")
 
-print("Base de datos poblada con éxito. Puedes verificarlo en el panel de administración o en tu API.")
+# Ejecutar el script
+if __name__ == '__main__':
+    borrar_datos_existentes()
+    crear_datos_de_ejemplo()
