@@ -104,8 +104,8 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Añade la ruta a tu carpeta 'build' aquí.
-        'DIRS': [os.path.join(BASE_DIR, 'build')],
+        # Ahora Django buscará el index.html directamente en la carpeta 'build'
+        'DIRS': [os.path.join(BASE_DIR, 'build')], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -175,7 +175,13 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, 'build'),
+#]
+#STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS
