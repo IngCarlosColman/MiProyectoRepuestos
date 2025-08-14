@@ -1,102 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import ErrorBoundary from './ErrorBoundary'; // Importamos el componente Límite de Error
 
 function App() {
-  // Estado para almacenar la lista de repuestos
   const [repuestos, setRepuestos] = useState([]);
-  // Estado para manejar el estado de carga
-  const [cargando, setCargando] = useState(true);
-  // Estado para manejar los errores
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // useEffect para realizar la llamada a la API cuando el componente se monte
   useEffect(() => {
     const fetchRepuestos = async () => {
       try {
-        // Asumiendo que esta es la URL de tu API de Django
-        const response = await axios.get('http://localhost:8000/api/repuestos/');
-        
-        // Se añade una comprobación para asegurar que response.data es un array
-        // antes de actualizar el estado.
-        if (Array.isArray(response.data)) {
-          setRepuestos(response.data);
-        } else {
-          // Si los datos no son un array, registramos un error y establecemos
-          // un array vacío para evitar que la aplicación se bloquee.
-          console.error("La API no devolvió una lista de repuestos, sino:", response.data);
-          setRepuestos([]);
-          setError("Error en los datos de la API. Por favor, contacta con soporte.");
+        // La URL es relativa gracias a la configuración del proxy en package.json
+        const response = await fetch('/api/repuestos/');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
-        setError(null);
-      } catch (err) {
-        // En caso de error, guardamos el mensaje en el estado
-        setError('No se pudieron cargar los repuestos. Intente de nuevo más tarde.');
-        console.error("Error al obtener repuestos:", err);
+        const data = await response.json();
+        setRepuestos(data);
+      } catch (e) {
+        console.error("No se pudo obtener la lista de repuestos:", e);
+        setError(e.message);
       } finally {
-        // Independientemente del resultado, la carga ha terminado
-        setCargando(false);
+        setLoading(false);
       }
     };
+
     fetchRepuestos();
-  }, []); // El array vacío asegura que se ejecute solo una vez
-
-  // Lógica de renderizado condicional
-  if (cargando) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-xl text-gray-700">Cargando repuestos...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-red-500 text-xl">{error}</p>
-      </div>
-    );
-  }
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-8">
-      <h1 className="text-4xl font-bold text-gray-800 mb-8">Catálogo de Repuestos</h1>
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Inventario de Repuestos</h1>
       
-      {Array.isArray(repuestos) && repuestos.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
-          {repuestos.map(repuesto => (
-            <div key={repuesto.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-2">{repuesto.nombre}</h2>
-              <p className="text-gray-600 mb-4">{repuesto.descripcion}</p>
-              <div className="text-sm text-gray-500">
-                {/* CORRECCIÓN: Ahora accedemos a repuesto.categoria.nombre */}
-                <p><strong>Categoría:</strong> {repuesto.categoria.nombre}</p>
-                {/* La corrección anterior para 'compatibilidad' sigue siendo válida */}
-                <p>
-                  <strong>Vehículos compatibles:</strong>
-                  {repuesto.compatibilidad?.length > 0
-                    ? repuesto.compatibilidad.map(v => `${v.marca} ${v.modelo} (${v.anio})`).join(', ')
-                    : 'No se especifican'}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center p-12">
-          <p className="text-xl text-gray-500">No se encontraron repuestos.</p>
+      {/* Mostrar estado de carga */}
+      {loading && (
+        <p className="text-gray-600 text-center">Cargando repuestos...</p>
+      )}
+
+      {/* Mostrar mensaje de error */}
+      {error && (
+        <p className="text-red-500 text-center">Error al cargar los datos: {error}</p>
+      )}
+
+      {/* Mostrar la lista de repuestos */}
+      {!loading && !error && (
+        <div>
+          {repuestos.length > 0 ? (
+            <ul className="space-y-4">
+              {repuestos.map(repuesto => (
+                <li key={repuesto.id} className="p-4 bg-gray-50 rounded-md shadow-sm border border-gray-200 hover:bg-gray-100 transition-colors duration-200">
+                  <div className="text-lg font-semibold text-gray-900">{repuesto.nombre}</div>
+                  <div className="text-sm text-gray-500">Código: {repuesto.codigo}</div>
+                  <div className="text-sm text-gray-500">Cantidad: {repuesto.cantidad}</div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600 text-center">No hay repuestos para mostrar.</p>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-// Envolvemos el componente App con el ErrorBoundary.
-export default function AppWithErrorBoundary() {
-  return (
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  );
-}
+export default App;
