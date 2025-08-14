@@ -23,20 +23,20 @@ const processNestedHtml = (content, loaderContext, dir = null) =>
 // HTML generation
 const paths = [];
 const generateHTMLPlugins = () =>
-  glob.sync("./src/*.html").map((dir) => {
-    const filename = path.basename(dir);
+  glob.sync("./src/*.html").map((dir) => {
+    const filename = path.basename(dir);
 
-    if (filename !== "404.html") {
-      paths.push(filename);
-    }
+    // Esta es la parte clave. Le decimos a Webpack que el archivo de salida
+    // para el HTML debe ir a la carpeta 'templates' de Django.
+    const outputFilename = path.join('..', 'buscador', 'templates', filename);
 
-    return new HtmlWebpackPlugin({
-      filename,
-      template: `./src/${filename}`,
-      favicon: `./src/images/favicon.ico`,
-      inject: "body",
-    });
-  });
+    return new HtmlWebpackPlugin({
+      filename: outputFilename,
+      template: `./src/${filename}`,
+      favicon: `./src/images/favicon.ico`,
+      inject: "body",
+    });
+  });
 
 module.exports = {
   mode: "development",

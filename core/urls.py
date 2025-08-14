@@ -3,13 +3,13 @@ URL configuration for core project.
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic.base import RedirectView
 
 urlpatterns = [
-    # Redirecciona la URL base ('/') a la lista de repuestos de la API.
-    path('', RedirectView.as_view(url='api/repuestos/', permanent=True)),
+    # Esta línea ahora se encarga de la ruta principal.
+    # Le dice a Django que use las URLs de tu aplicación 'buscador'
+    # para la ruta raíz, lo que cargará tu aplicación de React.
+    path('', include('buscador.urls')),
 
+    # Mantenemos la ruta para el panel de administración de Django.
     path('admin/', admin.site.urls),
-    # Incluye las URLs de la API desde tu aplicación 'buscador'
-    path('api/', include('buscador.api.urls')),
 ]

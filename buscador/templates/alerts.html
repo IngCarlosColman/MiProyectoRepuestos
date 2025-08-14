@@ -7,10 +7,10 @@
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Badge | TailAdmin - Tailwind CSS Admin Dashboard Template</title>
-  <link rel="icon" href="favicon.ico"><link href="style.css" rel="stylesheet"></head>
+    <title>Alerts | TailAdmin - Tailwind CSS Admin Dashboard Template</title>
+  <link rel="icon" href="../../build/favicon.ico"><link href="../../build/style.css" rel="stylesheet"></head>
   <body
-    x-data="{ page: 'badge', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+    x-data="{ page: 'alerts', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
     x-init="
          darkMode = JSON.parse(localStorage.getItem('darkMode'));
          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
@@ -42,7 +42,7 @@
         <main>
           <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
             <!-- Breadcrumb Start -->
-            <div x-data="{ pageName: `Badge`}">
+            <div x-data="{ pageName: `Alerts`}">
               <include src="./partials/breadcrumb.html" />
             </div>
             <!-- Breadcrumb End -->
@@ -55,13 +55,15 @@
                   <h3
                     class="text-base font-medium text-gray-800 dark:text-white/90"
                   >
-                    With Light Background
+                    Success Alert
                   </h3>
                 </div>
                 <div
-                  class="border-t border-gray-100 p-6 dark:border-gray-800 xl:p-10"
+                  class="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6"
                 >
-                  <include src="./partials/badge/badge-01.html" />
+                  <div class="space-y-6">
+                    <include src="./partials/alert/alert-success.html" />
+                  </div>
                 </div>
               </div>
 
@@ -72,13 +74,15 @@
                   <h3
                     class="text-base font-medium text-gray-800 dark:text-white/90"
                   >
-                    With Solid Background
+                    Warning Alert
                   </h3>
                 </div>
                 <div
-                  class="border-t border-gray-100 p-6 dark:border-gray-800 xl:p-10"
+                  class="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6"
                 >
-                  <include src="./partials/badge/badge-02.html" />
+                  <div class="space-y-6">
+                    <include src="./partials/alert/alert-warning.html" />
+                  </div>
                 </div>
               </div>
 
@@ -89,13 +93,15 @@
                   <h3
                     class="text-base font-medium text-gray-800 dark:text-white/90"
                   >
-                    Light Background with Left Icon
+                    Error Alert
                   </h3>
                 </div>
                 <div
-                  class="border-t border-gray-100 p-6 dark:border-gray-800 xl:p-10"
+                  class="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6"
                 >
-                  <include src="./partials/badge/badge-03.html" />
+                  <div class="space-y-6">
+                    <include src="./partials/alert/alert-error.html" />
+                  </div>
                 </div>
               </div>
 
@@ -106,47 +112,15 @@
                   <h3
                     class="text-base font-medium text-gray-800 dark:text-white/90"
                   >
-                    Solid Background with Left Icon
+                    Info Alert
                   </h3>
                 </div>
                 <div
-                  class="border-t border-gray-100 p-6 dark:border-gray-800 xl:p-10"
+                  class="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6"
                 >
-                  <include src="./partials/badge/badge-04.html" />
-                </div>
-              </div>
-
-              <div
-                class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-              >
-                <div class="px-6 py-5">
-                  <h3
-                    class="text-base font-medium text-gray-800 dark:text-white/90"
-                  >
-                    Light Background with Right Icon
-                  </h3>
-                </div>
-                <div
-                  class="border-t border-gray-100 p-6 dark:border-gray-800 xl:p-10"
-                >
-                  <include src="./partials/badge/badge-05.html" />
-                </div>
-              </div>
-
-              <div
-                class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-              >
-                <div class="px-6 py-5">
-                  <h3
-                    class="text-base font-medium text-gray-800 dark:text-white/90"
-                  >
-                    Solid Background with Right Icon
-                  </h3>
-                </div>
-                <div
-                  class="border-t border-gray-100 p-6 dark:border-gray-800 xl:p-10"
-                >
-                  <include src="./partials/badge/badge-06.html" />
+                  <div class="space-y-6">
+                    <include src="./partials/alert/alert-info.html" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -157,5 +131,5 @@
       <!-- ===== Content Area End ===== -->
     </div>
     <!-- ===== Page Wrapper End ===== -->
-  <script defer src="bundle.js"></script><script defer src="style.js"></script></body>
+  <script defer src="../../build/bundle.js"></script><script defer src="../../build/style.js"></script></body>
 </html>
